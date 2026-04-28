@@ -785,14 +785,20 @@ function render() {
     actions.className = "actions";
     actions.innerHTML = `
       <button class="secondary" type="button" id="prev-${qi}">Précédent</button>
-      <button class="secondary" type="button" id="next-${qi}">Suivant</button>
-      <button class="main" type="button">Corriger ce quiz</button>
-      <button class="ghost" type="button">Recommencer</button>
+      <button class="main" type="button" id="next-${qi}">Suivant</button>
+      <button class="ghost" type="button" id="restart-${qi}">Recommencer</button>
     `;
-    actions.querySelector(".main").addEventListener("click", () => checkQuiz(qi));
-    actions.querySelector(".ghost").addEventListener("click", () => resetQuiz(qi));
     actions.querySelector(`#prev-${qi}`).addEventListener("click", () => moveQuestion(qi, -1));
-    actions.querySelector(`#next-${qi}`).addEventListener("click", () => moveQuestion(qi, 1));
+    actions.querySelector(`#next-${qi}`).addEventListener("click", () => {
+      const last = quizzes[qi].questions.length - 1;
+
+      if (state.currentQuestion[qi] === last) {
+        checkQuiz(qi);
+      } else {
+        moveQuestion(qi, 1);
+      }
+    });
+    actions.querySelector(`#restart-${qi}`).addEventListener("click", () => resetQuiz(qi));
     section.appendChild(actions);
 
     const result = document.createElement("div");
@@ -874,13 +880,26 @@ function moveQuestion(qi, direction) {
 function updateQuestionView(qi) {
   const current = state.currentQuestion[qi];
   const quiz = quizzes[qi];
+  const last = quiz.questions.length - 1;
+
   document.querySelectorAll(`#quiz-${qi} .question`).forEach((question, index) => {
     question.classList.toggle("current", index === current);
   });
+
   document.getElementById(`progress-${qi}`).style.width = `${((current + 1) / quiz.questions.length) * 100}%`;
   document.getElementById(`progress-label-${qi}`).textContent = `Question ${current + 1}/${quiz.questions.length}`;
+
   document.getElementById(`prev-${qi}`).disabled = current === 0;
-  document.getElementById(`next-${qi}`).disabled = current === quiz.questions.length - 1;
+
+  const nextBtn = document.getElementById(`next-${qi}`);
+
+  if (current === last) {
+    nextBtn.textContent = "Corriger";
+    nextBtn.setAttribute("aria-label", "Corriger le quiz");
+  } else {
+    nextBtn.textContent = "Suivant";
+    nextBtn.setAttribute("aria-label", "Question suivante");
+  }
 }
 
 function clearFeedback(qi, qj) {
