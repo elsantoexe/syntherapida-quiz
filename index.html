@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiizz du cours materiaux avec Score par levisco — Quiz Science des matériaux</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #151923;
+      --muted: #657081;
+      --line: rgba(103, 117, 139, .22);
+      --panel: rgba(255, 255, 255, .76);
+      --panel-strong: rgba(255, 255, 255, .92);
+      --blue: #0a84ff;
+      --blue-deep: #0056d6;
+      --green: #18a058;
+      --red: #d44b35;
+      --amber: #b7791f;
+      --shadow: 0 24px 70px rgba(27, 39, 63, .14);
+      --soft-shadow: 0 14px 36px rgba(37, 49, 75, .10);
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% 8%, rgba(10, 132, 255, .20), transparent 34%),
+        radial-gradient(circle at 88% 2%, rgba(52, 199, 89, .14), transparent 30%),
+        linear-gradient(140deg, #f8fbff 0%, #eef3f8 48%, #fbfaf7 100%);
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.48) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.42) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 72%);
+    }
+
+    header {
+      width: min(1120px, 94vw);
+      margin: 0 auto;
+      padding: 46px 0 22px;
+      text-align: center;
+      animation: riseIn .7s ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+      color: #3d4b61;
+      font-size: .86rem;
+      font-weight: 700;
+      backdrop-filter: blur(18px);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(24,160,88,.13);
+    }
+
+    header h1 {
+      margin: 0 auto 14px;
+      max-width: 940px;
+      font-size: 4.3rem;
+      line-height: .98;
+      letter-spacing: 0;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    header p {
+      max-width: 830px;
+      margin: 0 auto;
+      color: #4f5e72;
+      font-size: 1.08rem;
+    }
+
+    .contacts {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      border: 1px solid rgba(101,112,129,.20);
+      border-radius: 999px;
+      color: #233044;
+      background: rgba(255,255,255,.70);
+      text-decoration: none;
+      font-weight: 750;
+      box-shadow: 0 10px 28px rgba(24, 39, 75, .08);
+      backdrop-filter: blur(18px);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .contact-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(10,132,255,.35);
+      background: rgba(255,255,255,.92);
+    }
+
+    main {
+      width: min(1120px, 94vw);
+      margin: 0 auto 48px;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      animation: riseIn .72s ease both;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .mode-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+      font-size: 1.02rem;
+      font-weight: 850;
+    }
+
+    .mode-copy { color: var(--muted); }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .tab {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.68);
+      color: #2a3547;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(27, 39, 63, .07);
+      transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .tab:hover { transform: translateY(-2px); }
+    .tab.active {
+      background: #111827;
+      color: white;
+      border-color: rgba(255,255,255,.36);
+    }
+
+    .scorebox {
+      min-width: 180px;
+      padding: 16px;
+      border-radius: 22px;
+      color: white;
+      text-align: center;
+      background: linear-gradient(145deg, #151923, #273144);
+      box-shadow: 0 18px 36px rgba(21,25,35,.22);
+    }
+
+    .scorebox span { color: rgba(255,255,255,.72); font-size: .88rem; }
+    .scorebox strong { display: block; font-size: 1.85rem; line-height: 1.1; }
+    .scorebox small { color: rgba(255,255,255,.76); }
+
+    .quiz {
+      display: none;
+      padding: 22px;
+    }
+
+    .quiz.active {
+      display: block;
+      animation: fadeSwitch .34s ease both;
+    }
+
+    .quiz-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .quiz h2 {
+      margin: 0 0 7px;
+      font-size: 1.85rem;
+      letter-spacing: 0;
+    }
+
+    .desc {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(101,112,129,.18);
+      background: rgba(255,255,255,.72);
+      color: #314055;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .progress-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 18px;
+    }
+
+    .progress {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(130,145,166,.18);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), #34c759);
+      transition: width .35s ease;
+    }
+
+    .question {
+      display: none;
+      border: 1px solid rgba(128, 143, 165, .20);
+      border-radius: 24px;
+      padding: 20px;
+      background: var(--panel-strong);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .question.current {
+      display: block;
+      animation: questionIn .35s ease both;
+    }
+
+    .question h3 {
+      margin: 0 0 16px;
+      font-size: 1.16rem;
+      line-height: 1.35;
+    }
+
+    .choice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid rgba(126, 140, 162, .18);
+      border-radius: 16px;
+      margin: 9px 0;
+      background: rgba(248,250,252,.82);
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: rgba(10,132,255,.35);
+      background: #f3f8ff;
+    }
+
+    .choice input { margin-top: 3px; accent-color: var(--blue); }
+    .choice.selected {
+      border-color: rgba(10,132,255,.46);
+      background: rgba(10,132,255,.09);
+      box-shadow: 0 0 0 4px rgba(10,132,255,.08);
+    }
+
+    .choice.correct {
+      border-color: rgba(24,160,88,.45);
+      background: rgba(24,160,88,.10);
+    }
+
+    .choice.wrong {
+      border-color: rgba(212,75,53,.42);
+      background: rgba(212,75,53,.09);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid rgba(113,128,150,.26);
+      border-radius: 16px;
+      padding: 13px 14px;
+      background: rgba(255,255,255,.86);
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(10,132,255,.62);
+      box-shadow: 0 0 0 5px rgba(10,132,255,.12);
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 16px;
+      color: #283446;
+      background: rgba(244,247,251,.9);
+      border: 1px solid rgba(113,128,150,.16);
+    }
+
+    .feedback.show { display: block; animation: fadeSwitch .25s ease both; }
+    .feedback.good { background: rgba(24,160,88,.10); border-color: rgba(24,160,88,.22); }
+    .feedback.bad { background: rgba(212,75,53,.09); border-color: rgba(212,75,53,.20); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button.main,
+    button.secondary,
+    button.ghost {
+      min-height: 44px;
+      border-radius: 15px;
+      padding: 11px 15px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    button.main {
+      border: 0;
+      background: linear-gradient(145deg, var(--blue), var(--blue-deep));
+      color: white;
+      box-shadow: 0 14px 28px rgba(10,132,255,.24);
+    }
+
+    button.secondary {
+      border: 1px solid rgba(101,112,129,.22);
+      background: rgba(255,255,255,.82);
+      color: #1f2937;
+    }
+
+    button.ghost {
+      border: 1px solid transparent;
+      background: transparent;
+      color: #334155;
+    }
+
+    button:hover { transform: translateY(-2px); }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .48;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid rgba(24,160,88,.22);
+      border-radius: 20px;
+      background: rgba(240,253,244,.76);
+      animation: resultPop .42s ease both;
+    }
+
+    .result.show { display: block; }
+    .result strong { font-size: 1.15rem; }
+
+    .correction {
+      margin-top: 11px;
+      padding-top: 11px;
+      border-top: 1px solid rgba(102,116,140,.14);
+      color: #374151;
+      font-size: .95rem;
+    }
+
+    .ok,
+    .bad,
+    .warn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      margin-right: 6px;
+      font-weight: 900;
+    }
+
+    .ok { color: var(--green); }
+    .bad { color: var(--red); }
+    .warn { color: var(--amber); }
+
+    footer {
+      text-align: center;
+      color: #6d7787;
+      padding: 28px 10px 44px;
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes questionIn {
+      from { opacity: 0; transform: translateY(10px) scale(.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes fadeSwitch {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes resultPop {
+      0% { opacity: 0; transform: translateY(8px) scale(.99); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    @media (max-width: 760px) {
+      header { padding-top: 34px; }
+      header h1 {
+        max-width: 360px;
+        font-size: 1.72rem;
+        line-height: 1.08;
+      }
+      header p { font-size: 1rem; }
+      .quiz h2 { font-size: 1.55rem; }
+      .question h3 { font-size: 1.05rem; }
+      .topbar,
+      .quiz-head {
+        grid-template-columns: 1fr;
+      }
+      .scorebox { min-width: 0; }
+      .quiz, .topbar { padding: 16px; }
+      .panel { border-radius: 22px; }
+      .progress-wrap { grid-template-columns: 1fr; }
+      button.main, button.secondary, button.ghost { flex: 1 1 150px; }
+    }
+
+    @media (max-width: 430px) {
+      header h1 {
+        max-width: 340px;
+        font-size: 1.58rem;
+      }
+      .eyebrow { font-size: .78rem; }
+      .contact-link { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Science des matériaux — révision examen</div>
+    <h1>Quiizz du cours materiaux avec Score par levisco</h1>
+    <p>Quiz interactif enrichi : classification, liaisons, cristallographie, céramiques, verres, polymères, composites, semi-conducteurs et propriétés mécaniques.</p>
+    <div class="contacts" aria-label="Contacts Levisco">
+      <a class="contact-link" href="https://wa.me/22367627892" target="_blank" rel="noopener">WhatsApp : wa.me/22367627892</a>
+      <a class="contact-link" href="https://t.me/lordelsanto" target="_blank" rel="noopener">Telegram : t.me/lordelsanto</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel topbar">
+      <div>
+        <div class="mode-title">Mode examen rapide</div>
+        <div class="mode-copy" id="examSummary"></div>
+        <div class="tabs" id="tabs" aria-label="Choix du questionnaire"></div>
+      </div>
+      <div class="scorebox" aria-live="polite">
+        <span>Score total</span>
+        <strong id="globalScore">0/0</strong>
+        <small id="globalPercent">0%</small>
+      </div>
+    </section>
+
+    <section id="quizContainer"></section>
+  </main>
+
+  <footer>
+    Créé pour réviser rapidement — Science des matériaux par levisco
+  </footer>
+
+<script>
+const quizzes = [
+  {
+    title: "Quiz 1 — Généralités et classification",
+    desc: "Familles de matériaux, composites, exemples usuels et logique composition-structure-propriétés.",
+    questions: [
+      {type:"mcq", q:"1. Les matériaux solides traditionnels sont généralement regroupés en :", options:["Deux classes", "Trois classes", "Cinq classes", "Une seule classe"], answer:"Trois classes", explain:"Les trois classes traditionnelles sont : métaux/alliages, verres/céramiques, polymères/organiques."},
+      {type:"tf", q:"2. Un composite est toujours constitué d’un seul type de matériau.", answer:"Faux", explain:"Un composite associe au moins deux matériaux pour combiner leurs propriétés."},
+      {type:"mcq", q:"3. Le bronze appartient à quelle classe ?", options:["Polymères", "Verres et céramiques", "Métaux et alliages", "Semi-conducteurs"], answer:"Métaux et alliages", explain:"Le bronze est un alliage métallique à base de cuivre et d’étain."},
+      {type:"text", q:"4. Citer deux exemples de polymères ou matériaux organiques.", keywords:["bois","papier","plastique","laine","soie","pvc","nylon","polyéthylène","polypropylene","coton"], explain:"Exemples acceptés : bois, papier, plastique, laine, soie, PVC, nylon, coton, etc."},
+      {type:"mcq", q:"5. Le béton est classé principalement dans :", options:["Métaux et alliages", "Verres et céramiques", "Polymères", "Semi-conducteurs"], answer:"Verres et céramiques", explain:"Le béton est un matériau minéral, proche de la famille des céramiques."},
+      {type:"mcq", q:"6. La science des matériaux étudie surtout le lien entre :", options:["Prix, couleur et masse", "Composition, structure, procédés et propriétés", "Marque, forme et emballage", "Taille, nom et origine commerciale"], answer:"Composition, structure, procédés et propriétés", explain:"Le cours insiste sur la relation composition + structure + procédés ⇒ propriétés et usages."},
+      {type:"mcq", q:"7. Dans les métaux et alliages, la liaison dominante est généralement :", options:["Métallique", "Hydrogène", "Van der Waals", "Purement ionique"], answer:"Métallique", explain:"Les électrons délocalisés expliquent notamment la bonne conductivité et la ductilité des métaux."},
+      {type:"mcq", q:"8. Une bouteille de boisson en verre appartient principalement à la famille :", options:["Métaux et alliages", "Verres et céramiques", "Polymères", "Biomatériaux uniquement"], answer:"Verres et céramiques", explain:"Le verre est un solide minéral amorphe rattaché à la grande famille verres/céramiques."},
+      {type:"mcq", q:"9. Un matériau organique ou polymère est souvent caractérisé par :", options:["Des chaînes macromoléculaires et des liaisons majoritairement covalentes", "Une mer d’électrons libres", "Une maille métallique CFC obligatoire", "Une composition uniquement ionique"], answer:"Des chaînes macromoléculaires et des liaisons majoritairement covalentes", explain:"Les polymères sont formés de longues chaînes ; leurs propriétés dépendent fortement de leur structure et de leur organisation."},
+      {type:"mcq", q:"10. Le béton armé est un bon exemple de composite parce qu’il associe :", options:["Béton et acier", "Verre et eau", "Cuivre et étain", "PVC et nylon uniquement"], answer:"Béton et acier", explain:"Le béton résiste bien en compression, l’acier reprend les efforts de traction : les propriétés sont combinées."},
+      {type:"tf", q:"11. La classification d’un matériau peut dépendre de sa composition chimique et de sa structure atomique.", answer:"Vrai", explain:"Le cours classe les matériaux selon la composition, la structure atomique et le type de liaison dominant."},
+      {type:"mcq", q:"12. Le bois et le papier sont classés le plus souvent parmi :", options:["Matériaux organiques", "Métaux purs", "Céramiques réfractaires", "Semi-conducteurs intrinsèques"], answer:"Matériaux organiques", explain:"Ils proviennent de matière organique et contiennent des macromolécules comme la cellulose."},
+      {type:"mcq", q:"13. Un alliage est :", options:["Un mélange métallique d’au moins deux éléments dont un métal", "Un polymère toujours amorphe", "Un verre obtenu par refroidissement rapide", "Un matériau forcément biologique"], answer:"Un mélange métallique d’au moins deux éléments dont un métal", explain:"Le bronze, les aciers et les laitons sont des exemples classiques d’alliages."},
+      {type:"mcq", q:"14. Une propriété souvent recherchée dans les métaux est :", options:["Bonne conductivité électrique", "Absence totale de plasticité", "Fragilité obligatoire", "Transparence permanente"], answer:"Bonne conductivité électrique", explain:"Les électrons délocalisés expliquent la conductivité électrique et thermique élevée de nombreux métaux."},
+      {type:"mcq", q:"15. Les céramiques et verres sont souvent appréciés pour :", options:["Leur stabilité chimique et leur dureté", "Leur forte ductilité", "Leur conductivité électrique toujours maximale", "Leur fusion à température ambiante"], answer:"Leur stabilité chimique et leur dureté", explain:"Elles sont souvent dures, réfractaires et chimiquement stables, mais peuvent être fragiles."},
+      {type:"tf", q:"16. Un matériau dur est automatiquement tenace.", answer:"Faux", explain:"Dureté et ténacité sont différentes : une céramique peut être très dure mais fragile au choc."},
+      {type:"mcq", q:"17. Un pneu de voiture est classé comme composite car il associe souvent :", options:["Caoutchouc, fibres et parfois fils métalliques", "Seulement du fer pur", "Uniquement du verre amorphe", "De l’eau et du sel"], answer:"Caoutchouc, fibres et parfois fils métalliques", explain:"Le pneu combine une matrice polymère avec des renforts pour améliorer résistance et tenue mécanique."},
+      {type:"text", q:"18. Citer deux exemples de matériaux métalliques ou alliages.", keywords:["fer","acier","cuivre","aluminium","bronze","laiton","argent","or","fonte"], explain:"Exemples acceptés : fer, acier, cuivre, aluminium, bronze, laiton, argent, fonte, etc."},
+      {type:"mcq", q:"19. Le choix d’un matériau pour une pièce technique doit surtout tenir compte :", options:["Des propriétés utiles, des conditions d’utilisation et du procédé de fabrication", "Uniquement de la couleur", "Uniquement du nom commercial", "Du hasard"], answer:"Des propriétés utiles, des conditions d’utilisation et du procédé de fabrication", explain:"La sélection d’un matériau se fait selon les contraintes mécaniques, thermiques, chimiques, économiques et de mise en forme."},
+      {type:"mcq", q:"20. L’argile appartient principalement à la famille :", options:["Céramiques et verres", "Métaux précieux", "Polymères synthétiques", "Semi-conducteurs dopés"], answer:"Céramiques et verres", explain:"L’argile est une matière minérale utilisée pour élaborer des céramiques."}
+    ]
+  },
+  {
+    title: "Quiz 2 — Semi-conducteurs et matériaux modernes",
+    desc: "Semi-conducteurs, nanomatériaux, biomatériaux, matériaux intelligents et composites avancés.",
+    questions: [
+      {type:"tf", q:"1. Les semi-conducteurs sont définis surtout par leurs propriétés électriques.", answer:"Vrai", explain:"Ils ont une conductivité intermédiaire entre conducteurs et isolants."},
+      {type:"mcq", q:"2. La conductivité des semi-conducteurs peut être modifiée par :", options:["Le dopage", "La peinture", "Le ponçage", "Le lavage"], answer:"Le dopage", explain:"Une faible quantité d’impuretés peut modifier fortement leurs propriétés électriques."},
+      {type:"text", q:"3. Décrire simplement un matériau intelligent.", keywords:["détecte","réagit","environnement","capteur","actionneur","changement"], explain:"Un matériau intelligent détecte un changement de l’environnement et réagit de manière prédéterminée."},
+      {type:"mcq", q:"4. Un nanomatériau se distingue surtout par :", options:["Sa couleur", "Sa taille nanométrique", "Son prix", "Sa masse élevée"], answer:"Sa taille nanométrique", explain:"La distinction se situe surtout dans la taille des particules, de l’ordre du nanomètre."},
+      {type:"mcq", q:"5. Un biomatériau doit être :", options:["Toxique", "Compatible avec le corps humain", "Toujours métallique", "Toujours liquide"], answer:"Compatible avec le corps humain", explain:"Il est utilisé dans l’organisme pour remplacer ou réparer une partie malade ou endommagée."},
+      {type:"mcq", q:"6. Pourquoi ne classe-t-on pas toujours les semi-conducteurs dans une seule famille traditionnelle ?", options:["Parce qu’ils sont définis par leur comportement électrique plutôt que par une seule composition", "Parce qu’ils sont toujours liquides", "Parce qu’ils n’ont jamais de structure atomique", "Parce qu’ils sont toujours des polymères"], answer:"Parce qu’ils sont définis par leur comportement électrique plutôt que par une seule composition", explain:"Un semi-conducteur peut être un élément covalent, un composé ou certains oxydes : la propriété électrique est le critère essentiel."},
+      {type:"mcq", q:"7. Le silicium et le germanium sont des exemples typiques de :", options:["Semi-conducteurs élémentaires", "Polymères thermodurcissables", "Alliages ferreux", "Verres sodocalciques"], answer:"Semi-conducteurs élémentaires", explain:"Si et Ge sont des semi-conducteurs covalents très utilisés en électronique."},
+      {type:"mcq", q:"8. Dans un semi-conducteur, augmenter la température tend généralement à :", options:["Augmenter le nombre de porteurs de charge", "Supprimer tous les électrons", "Transformer le matériau en métal pur", "Rendre la conductivité strictement nulle"], answer:"Augmenter le nombre de porteurs de charge", explain:"L’agitation thermique peut créer plus de porteurs libres, ce qui modifie la conductivité."},
+      {type:"tf", q:"9. GaAs peut être considéré comme un semi-conducteur composé.", answer:"Vrai", explain:"L’arséniure de gallium est un composé semi-conducteur utilisé notamment en optoélectronique."},
+      {type:"mcq", q:"10. Un capteur piézoélectrique est proche de l’idée de matériau intelligent car il :", options:["Convertit une sollicitation mécanique en signal électrique", "Dissout toujours dans l’eau", "Devient forcément transparent", "Empêche toute déformation"], answer:"Convertit une sollicitation mécanique en signal électrique", explain:"La réponse à une sollicitation extérieure est au cœur des matériaux fonctionnels ou intelligents."},
+      {type:"mcq", q:"11. Les nanomatériaux peuvent présenter des propriétés différentes surtout parce que :", options:["Le rapport surface/volume devient très élevé", "Leur masse molaire devient toujours nulle", "Ils sont toujours visibles à l’œil nu", "Ils perdent toute interaction chimique"], answer:"Le rapport surface/volume devient très élevé", explain:"À l’échelle nanométrique, la surface et les effets quantiques peuvent fortement influencer les propriétés."},
+      {type:"mcq", q:"12. Un implant osseux doit principalement vérifier :", options:["Biocompatibilité et tenue mécanique adaptées", "Toxicité élevée", "Fusion immédiate dans le sang", "Conductivité électrique maximale"], answer:"Biocompatibilité et tenue mécanique adaptées", explain:"Un biomatériau doit fonctionner dans un milieu biologique sans réaction nocive excessive."},
+      {type:"mcq", q:"13. Les fibres de carbone dans une résine servent surtout de :", options:["Renfort mécanique", "Solvant", "Colorant alimentaire", "Agent de corrosion"], answer:"Renfort mécanique", explain:"Dans un composite, les fibres portent une grande partie de l’effort tandis que la matrice transmet et protège."},
+      {type:"tf", q:"14. Un matériau moderne peut appartenir à une famille traditionnelle tout en ayant une fonction avancée.", answer:"Vrai", explain:"Une céramique, un polymère ou un métal peut être conçu pour une fonction électronique, biomédicale ou intelligente."},
+      {type:"mcq", q:"15. Dans un composite fibre + matrice, la matrice sert surtout à :", options:["Maintenir les fibres, transmettre les efforts et protéger le renfort", "Supprimer toutes les contraintes", "Transformer les fibres en liquide", "Augmenter uniquement la couleur"], answer:"Maintenir les fibres, transmettre les efforts et protéger le renfort", explain:"La matrice assure la cohésion et le transfert des efforts vers le renfort."},
+      {type:"mcq", q:"16. Une application historique liée à la maîtrise des semi-conducteurs est :", options:["L’informatique et l’électronique", "La cuisson du pain", "La poterie uniquement", "La taille du bois"], answer:"L’informatique et l’électronique", explain:"Le cours souligne que la maîtrise des semi-conducteurs a permis de grands progrès en informatique."},
+      {type:"mcq", q:"17. Un matériau à mémoire de forme est dit intelligent car il peut :", options:["Retrouver une forme programmée sous l’effet d’un stimulus", "Changer son numéro atomique", "Devenir un gaz parfait", "Perdre toute rigidité définitivement"], answer:"Retrouver une forme programmée sous l’effet d’un stimulus", explain:"La réaction contrôlée à la température ou à une contrainte est une signature des matériaux intelligents."},
+      {type:"text", q:"18. Citer deux usages possibles des biomatériaux.", keywords:["implant","prothèse","dentaire","os","hanche","valve","stent","réparer","remplacer"], explain:"Exemples : implants, prothèses, matériaux dentaires, valves, stents, remplacement ou réparation de tissus."},
+      {type:"mcq", q:"19. Un semi-conducteur intrinsèque est :", options:["Un semi-conducteur pur, sans dopage volontaire", "Un métal liquide", "Un polymère renforcé", "Une céramique sans atomes"], answer:"Un semi-conducteur pur, sans dopage volontaire", explain:"Le semi-conducteur intrinsèque s’oppose au semi-conducteur extrinsèque dopé."},
+      {type:"mcq", q:"20. Le rôle du dopage de type n est d’introduire principalement :", options:["Des électrons comme porteurs majoritaires", "Des bulles d’air", "Des fissures contrôlées", "Des molécules d’eau"], answer:"Des électrons comme porteurs majoritaires", explain:"Le dopage n apporte des électrons libres ; le dopage p favorise les trous comme porteurs majoritaires."}
+    ]
+  },
+  {
+    title: "Quiz 3 — Liaisons chimiques et atome",
+    desc: "Liaisons métalliques, covalentes, ioniques, électronégativité et configuration électronique.",
+    questions: [
+      {type:"mcq", q:"1. Dans les métaux, la liaison dominante est :", options:["Ionique", "Métallique", "Hydrogène", "Van der Waals"], answer:"Métallique", explain:"La liaison métallique implique des électrons délocalisés."},
+      {type:"tf", q:"2. La liaison covalente correspond à un partage d’électrons.", answer:"Vrai", explain:"La liaison covalente est basée sur le partage d’électrons entre atomes."},
+      {type:"mcq", q:"3. Une liaison ionique résulte principalement :", options:["D’un transfert d’électrons", "D’une fusion", "D’une compression", "D’un refroidissement rapide"], answer:"D’un transfert d’électrons", explain:"Elle résulte d’une attraction entre ions de charges opposées."},
+      {type:"text", q:"4. Citer les quatre nombres quantiques d’un électron.", keywords:["n","l","ml","ms"], explain:"Les quatre nombres sont n, l, ml et ms."},
+      {type:"mcq", q:"5. La couche M correspond au nombre quantique principal :", options:["n = 1", "n = 2", "n = 3", "n = 4"], answer:"n = 3", explain:"K = 1, L = 2, M = 3, N = 4."},
+      {type:"mcq", q:"6. Une grande différence d’électronégativité entre deux atomes favorise surtout :", options:["Un caractère ionique plus marqué", "Une liaison métallique pure", "L’absence de liaison", "Une baisse automatique de masse"], answer:"Un caractère ionique plus marqué", explain:"Plus Δχ est élevé, plus le transfert électronique et le caractère ionique deviennent importants."},
+      {type:"mcq", q:"7. La formule courante du pourcentage de caractère ionique utilise :", options:["Δχ, la différence d’électronégativité", "La couleur du cristal", "La longueur de l’éprouvette", "La vitesse du vent"], answer:"Δχ, la différence d’électronégativité", explain:"La relation %CI = [1 - exp(-0,25(Δχ)²)] × 100 dépend de la différence d’électronégativité."},
+      {type:"mcq", q:"8. Dans une liaison métallique, les électrons de valence sont souvent décrits comme :", options:["Délocalisés", "Totalement absents", "Fixés chacun dans une molécule d’eau", "Toujours transférés vers l’oxygène"], answer:"Délocalisés", explain:"Cette délocalisation explique la conductivité et la malléabilité des métaux."},
+      {type:"tf", q:"9. Une liaison covalente directionnelle peut influencer fortement la dureté et la rigidité.", answer:"Vrai", explain:"Les liaisons covalentes fortes et directionnelles, comme dans certains réseaux, donnent souvent une grande rigidité."},
+      {type:"mcq", q:"10. L’ion Na+ contient par rapport à l’atome Na neutre :", options:["Un électron de moins", "Un électron de plus", "Un proton de moins", "Aucun noyau"], answer:"Un électron de moins", explain:"Un cation positif se forme par perte d’un ou plusieurs électrons."},
+      {type:"mcq", q:"11. L’ion Cl- contient par rapport à l’atome Cl neutre :", options:["Un électron de plus", "Un électron de moins", "Un proton de plus", "Deux noyaux"], answer:"Un électron de plus", explain:"Un anion négatif se forme par gain d’électron."},
+      {type:"mcq", q:"12. La configuration électronique du calcium Z = 20 se termine par :", options:["4s²", "3p¹", "2s²", "4p⁶"], answer:"4s²", explain:"Ca : 1s² 2s² 2p⁶ 3s² 3p⁶ 4s²."},
+      {type:"mcq", q:"13. Pour une sous-couche p, les valeurs possibles de ml sont :", options:["-1, 0, +1", "0 seulement", "-2 à +2", "+1/2 et -1/2"], answer:"-1, 0, +1", explain:"Pour p, l = 1, donc ml prend les valeurs -1, 0 et +1."},
+      {type:"mcq", q:"14. Le nombre quantique ms décrit :", options:["Le spin de l’électron", "La taille macroscopique du matériau", "La masse volumique", "La contrainte appliquée"], answer:"Le spin de l’électron", explain:"ms vaut généralement +1/2 ou -1/2."},
+      {type:"mcq", q:"15. Une céramique iono-covalente aura souvent :", options:["Une température de fusion élevée et une faible ductilité", "Une très grande ductilité métallique", "Une absence totale de dureté", "Une conductivité électrique toujours infinie"], answer:"Une température de fusion élevée et une faible ductilité", explain:"Les liaisons fortes expliquent la dureté et la tenue en température, mais limitent souvent la déformation plastique."},
+      {type:"tf", q:"16. Les liaisons de Van der Waals sont généralement plus faibles que les liaisons covalentes primaires.", answer:"Vrai", explain:"Ce sont des interactions secondaires, importantes par exemple entre chaînes polymères."},
+      {type:"mcq", q:"17. Dans les polymères, les chaînes sont souvent liées entre elles par :", options:["Des interactions secondaires et parfois des pontages", "Des noyaux atomiques partagés", "Des grains métalliques uniquement", "Une maille CFC obligatoire"], answer:"Des interactions secondaires et parfois des pontages", explain:"Les liaisons dans la chaîne sont covalentes, mais entre chaînes les interactions sont souvent plus faibles."},
+      {type:"text", q:"18. Donner un indice qui permet de reconnaître une liaison métallique.", keywords:["conductivité","électrons","délocalisés","ductile","malléable","brillance"], explain:"Indices : électrons délocalisés, conductivité élevée, ductilité, malléabilité, brillance métallique."},
+      {type:"mcq", q:"19. Le type de liaison influence directement :", options:["Les propriétés mécaniques, électriques et thermiques", "Uniquement le nom du matériau", "Uniquement la couleur du tableau", "Aucune propriété mesurable"], answer:"Les propriétés mécaniques, électriques et thermiques", explain:"La nature de la liaison est l’un des déterminants majeurs des propriétés des matériaux."},
+      {type:"mcq", q:"20. Une liaison ionique est électriquement neutre à l’échelle du cristal parce que :", options:["Les charges positives et négatives se compensent globalement", "Les ions n’ont pas de charge", "Les électrons disparaissent", "Le matériau devient un gaz"], answer:"Les charges positives et négatives se compensent globalement", explain:"Le cristal ionique contient des ions opposés en proportion assurant la neutralité globale."}
+    ]
+  },
+  {
+    title: "Quiz 4 — Cristallographie",
+    desc: "Cristal, amorphe, maille, nœud, systèmes cristallins, CC, CFC, compacité et défauts.",
+    questions: [
+      {type:"mcq", q:"1. Un corps cristallin possède :", options:["Un ordre périodique", "Aucun ordre", "Seulement des gaz", "Aucune structure"], answer:"Un ordre périodique", explain:"Dans un cristal, les atomes sont arrangés de manière régulière et répétitive."},
+      {type:"tf", q:"2. Le verre est généralement un solide amorphe.", answer:"Vrai", explain:"Le verre n’a pas d’ordre périodique à longue distance."},
+      {type:"mcq", q:"3. La structure cubique centrée contient combien d’atomes par maille ?", options:["1", "2", "4", "8"], answer:"2", explain:"En cubique centrée : 8 sommets × 1/8 + 1 centre = 2 atomes."},
+      {type:"mcq", q:"4. La structure cubique à faces centrées contient combien d’atomes par maille ?", options:["2", "3", "4", "6"], answer:"4", explain:"En CFC : 8 sommets × 1/8 + 6 faces × 1/2 = 4 atomes."},
+      {type:"text", q:"5. Définir brièvement une maille cristalline.", keywords:["plus petit","répétition","volume","cristal","réseau","élémentaire"], explain:"La maille est le plus petit volume qui se répète dans l’espace pour former le cristal."},
+      {type:"mcq", q:"6. Dans une structure cubique centrée CC/BCC, la relation entre paramètre de maille a et rayon atomique r est :", options:["a = 4r/√3", "a = 2√2r", "a = r/4", "a = 8r"], answer:"a = 4r/√3", explain:"En CC, les atomes se touchent le long de la diagonale du cube : √3a = 4r."},
+      {type:"mcq", q:"7. Dans une structure cubique à faces centrées CFC/FCC, la relation entre a et r est :", options:["a = 2√2r", "a = 4r/√3", "a = 2r", "a = r√3/4"], answer:"a = 2√2r", explain:"En CFC, les atomes se touchent le long de la diagonale d’une face : √2a = 4r."},
+      {type:"mcq", q:"8. La compacité approximative de la structure cubique centrée est :", options:["0,68", "0,52", "0,74", "1,00"], answer:"0,68", explain:"La structure CC est moins compacte que la CFC."},
+      {type:"mcq", q:"9. La compacité approximative de la structure CFC est :", options:["0,74", "0,34", "0,50", "0,12"], answer:"0,74", explain:"CFC est une structure compacte, comme HC, avec une compacité d’environ 0,74."},
+      {type:"mcq", q:"10. Le fer α à température ambiante est généralement associé à une structure :", options:["Cubique centrée", "Cubique à faces centrées", "Hexagonale compacte uniquement", "Amorphe"], answer:"Cubique centrée", explain:"Le questionnaire du cours cite le fer α comme exemple de structure cubique centrée."},
+      {type:"mcq", q:"11. Le cuivre cristallise généralement en structure :", options:["Cubique à faces centrées", "Cubique simple", "Cubique centrée", "Amorphe obligatoire"], answer:"Cubique à faces centrées", explain:"Le cuivre est un exemple classique de métal CFC."},
+      {type:"mcq", q:"12. Un nœud du réseau cristallin représente :", options:["Une position géométrique répétée du réseau", "Une fissure visible seulement", "Une molécule d’eau", "Un outil de polissage"], answer:"Une position géométrique répétée du réseau", explain:"Le réseau décrit la répétition périodique de points appelés nœuds."},
+      {type:"mcq", q:"13. Les sept systèmes cristallins sont classés selon :", options:["Les symétries et paramètres de maille", "La couleur du solide", "La masse de l’échantillon", "Le prix du matériau"], answer:"Les symétries et paramètres de maille", explain:"Cubique, tétragonal, orthorhombique, hexagonal, trigonal, monoclinique et triclinique."},
+      {type:"tf", q:"14. Un solide amorphe peut avoir un ordre à courte distance sans ordre périodique à longue distance.", answer:"Vrai", explain:"Le verre possède un certain arrangement local mais pas de répétition périodique longue portée."},
+      {type:"mcq", q:"15. La masse volumique cristalline peut être calculée avec :", options:["ρ = nM/(NAa³) pour une maille cubique", "ρ = F/S", "ρ = ΔL/L0", "ρ = Eε"], answer:"ρ = nM/(NAa³) pour une maille cubique", explain:"n est le nombre d’atomes par maille, M la masse molaire, NA le nombre d’Avogadro et a³ le volume de maille."},
+      {type:"mcq", q:"16. Une lacune dans un cristal est :", options:["Un site atomique normalement occupé mais vide", "Un atome en trop au centre de la Terre", "Une zone toujours liquide", "Une liaison covalente parfaite"], answer:"Un site atomique normalement occupé mais vide", explain:"C’est un défaut ponctuel courant qui influence diffusion et propriétés."},
+      {type:"mcq", q:"17. Un atome interstitiel est :", options:["Un atome placé dans un espace entre les sites réguliers du réseau", "Un atome absent", "Une maille entière supprimée", "Une surface polie"], answer:"Un atome placé dans un espace entre les sites réguliers du réseau", explain:"Les interstitiels déforment localement le réseau cristallin."},
+      {type:"mcq", q:"18. Une dislocation est principalement :", options:["Un défaut linéaire du réseau cristallin", "Une propriété optique", "Une molécule de polymère", "Une mesure de température"], answer:"Un défaut linéaire du réseau cristallin", explain:"Les dislocations sont essentielles pour comprendre la plasticité des cristaux."},
+      {type:"text", q:"19. Citer deux types de défauts cristallins.", keywords:["lacune","interstitiel","substitution","dislocation","joint","grain","défaut ponctuel"], explain:"Exemples : lacunes, interstitiels, substitutions, dislocations, joints de grains."},
+      {type:"mcq", q:"20. Le rapport rc/ra dans un cristal ionique aide à prévoir :", options:["La coordination et parfois le type de structure", "Le prix du matériau", "La couleur du cahier", "La masse du professeur"], answer:"La coordination et parfois le type de structure", explain:"Le rapport des rayons ioniques permet d’estimer les sites géométriquement possibles, par exemple une coordination octaédrique."}
+    ]
+  },
+  {
+    title: "Quiz 5 — Propriétés mécaniques et thermiques",
+    desc: "Contrainte, déformation, Hooke, module de Young, ductilité, dureté, fragilité et transfert thermique.",
+    questions: [
+      {type:"mcq", q:"1. La contrainte mécanique se calcule par :", options:["σ = F/S", "σ = S/F", "σ = F × S", "σ = E/F"], answer:"σ = F/S", explain:"La contrainte est la force divisée par la surface initiale."},
+      {type:"mcq", q:"2. La déformation relative se calcule par :", options:["ε = ΔL/L0", "ε = L0/ΔL", "ε = F/S", "ε = m/V"], answer:"ε = ΔL/L0", explain:"La déformation relative est l’allongement divisé par la longueur initiale."},
+      {type:"tf", q:"3. La déformation élastique est réversible.", answer:"Vrai", explain:"Le matériau reprend sa forme quand la force cesse."},
+      {type:"mcq", q:"4. La loi de Hooke s’écrit :", options:["σ = Eε", "ρ = m/V", "V = RI", "F = ma"], answer:"σ = Eε", explain:"Elle relie contrainte, module de Young et déformation dans le domaine élastique."},
+      {type:"mcq", q:"5. Pour un flux thermique à travers une paroi, si l’épaisseur augmente, le flux :", options:["Augmente", "Diminue", "Ne change pas", "Devient toujours nul"], answer:"Diminue", explain:"j = λΔT/e : plus l’épaisseur e est grande, plus le flux diminue."},
+      {type:"mcq", q:"6. Le module de Young E caractérise principalement :", options:["La rigidité en traction/compression dans le domaine élastique", "La masse volumique seulement", "La couleur du matériau", "La conductivité électrique uniquement"], answer:"La rigidité en traction/compression dans le domaine élastique", explain:"Plus E est élevé, moins le matériau se déforme élastiquement sous une même contrainte."},
+      {type:"mcq", q:"7. La limite d’élasticité Re correspond :", options:["Au début de la déformation plastique notable", "À la masse de l’éprouvette", "Au point de fusion", "À la couleur après polissage"], answer:"Au début de la déformation plastique notable", explain:"Au-delà de Re, le matériau ne revient plus totalement à sa forme initiale."},
+      {type:"mcq", q:"8. Un matériau ductile est capable :", options:["De subir une déformation plastique importante avant rupture", "De casser sans déformation", "De fondre à froid", "D’être toujours transparent"], answer:"De subir une déformation plastique importante avant rupture", explain:"La ductilité est la capacité à se déformer plastiquement avant rupture."},
+      {type:"mcq", q:"9. Un matériau fragile se caractérise plutôt par :", options:["Une rupture avec faible déformation plastique", "Une grande striction toujours visible", "Une plasticité très élevée", "Une absence de rupture possible"], answer:"Une rupture avec faible déformation plastique", explain:"Les céramiques et verres sont souvent fragiles malgré leur dureté élevée."},
+      {type:"mcq", q:"10. La dureté mesure principalement :", options:["La résistance à la pénétration ou au rayage", "La masse totale", "La longueur initiale", "La conductivité thermique"], answer:"La résistance à la pénétration ou au rayage", explain:"Les essais Brinell, Vickers ou Rockwell évaluent la résistance locale à l’indentation."},
+      {type:"tf", q:"11. Un matériau très dur peut quand même être fragile.", answer:"Vrai", explain:"C’est un piège classique : dureté et ténacité ne décrivent pas la même propriété."},
+      {type:"mcq", q:"12. Le coefficient de sécurité peut s’exprimer par :", options:["s = Re/σ", "s = σ/Re uniquement inversé", "s = ΔL/L0", "s = NA/M"], answer:"s = Re/σ", explain:"On compare la limite d’élasticité à la contrainte de service pour vérifier la marge de sécurité."},
+      {type:"mcq", q:"13. Si une barre de section S subit une force F plus grande, sa contrainte :", options:["Augmente", "Diminue toujours", "Reste forcément nulle", "Devient indépendante de S"], answer:"Augmente", explain:"À section constante, σ = F/S augmente avec la force."},
+      {type:"mcq", q:"14. Une striction lors d’un essai de traction correspond à :", options:["Une réduction localisée de section avant rupture", "Une augmentation uniforme de température", "Une cristallisation complète", "Une mesure de résistance électrique"], answer:"Une réduction localisée de section avant rupture", explain:"La striction est typique de nombreux matériaux ductiles avant rupture."},
+      {type:"mcq", q:"15. Le coefficient de Poisson décrit :", options:["La contraction latérale liée à l’allongement axial", "La charge maximale en Newton", "Le volume de la maille CFC", "Le pourcentage ionique"], answer:"La contraction latérale liée à l’allongement axial", explain:"Quand une éprouvette s’allonge en traction, elle se contracte généralement dans les directions transversales."},
+      {type:"mcq", q:"16. Pour les petites déformations élastiques, la relation contrainte-déformation est souvent :", options:["Linéaire", "Toujours circulaire", "Sans formule", "Inversée au hasard"], answer:"Linéaire", explain:"C’est le domaine d’application de la loi de Hooke."},
+      {type:"mcq", q:"17. Un polymère thermoplastique ductile peut montrer après la limite élastique :", options:["Une déformation plastique avec orientation des chaînes", "Une disparition des chaînes", "Une transformation en acier", "Une absence totale d’allongement"], answer:"Une déformation plastique avec orientation des chaînes", explain:"Les cours de propriétés décrivent la striction et l’orientation des chaînes pour certains polymères semi-cristallins."},
+      {type:"text", q:"18. Citer deux propriétés mécaniques importantes pour choisir un matériau.", keywords:["rigidité","résistance","dureté","ductilité","ténacité","fragilité","élasticité","plasticité","fatigue"], explain:"Exemples : rigidité, résistance, dureté, ductilité, ténacité, fragilité, élasticité, plasticité, fatigue."},
+      {type:"mcq", q:"19. Dans j = λΔT/e, λ représente :", options:["La conductivité thermique", "La limite d’élasticité", "La déformation relative", "La masse volumique"], answer:"La conductivité thermique", explain:"λ mesure la capacité d’un matériau à conduire la chaleur."},
+      {type:"mcq", q:"20. À contrainte égale, le matériau qui a le module de Young le plus élevé présente :", options:["La plus faible déformation élastique", "La plus grande déformation obligatoire", "Une rupture instantanée certaine", "Une masse nulle"], answer:"La plus faible déformation élastique", explain:"D’après σ = Eε, pour une même σ, ε = σ/E diminue quand E augmente."}
+    ]
+  }
+];
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function cloneQuestion(item, index) {
+  const cleanTitle = item.q.replace(/^\d+\.\s*/, "");
+  return {
+    ...item,
+    options: item.options ? [...item.options] : undefined,
+    keywords: item.keywords ? [...item.keywords] : undefined,
+    q: `${index + 1}. ${cleanTitle}`
+  };
+}
+
+function buildSmartQuiz() {
+  const selected = quizzes.flatMap(quiz => shuffle(quiz.questions).slice(0, 4));
+  return {
+    title: "Quiz intelligent — 20 questions aléatoires",
+    desc: "Tirage automatique équilibré à chaque ouverture du site : classification, liaisons, cristallographie, matériaux modernes et propriétés.",
+    smart: true,
+    questions: shuffle(selected).map(cloneQuestion)
+  };
+}
+
+quizzes.push(buildSmartQuiz());
+
+const state = {
+  activeQuiz: 0,
+  currentQuestion: quizzes.map(() => 0),
+  results: {},
+  checked: {}
+};
+
+const container = document.getElementById("quizContainer");
+const tabs = document.getElementById("tabs");
+const examSummary = document.getElementById("examSummary");
+const totalQuestions = quizzes.reduce((sum, quiz) => sum + quiz.questions.length, 0);
+
+function normalize(value) {
+  return (value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function isTextAnswerCorrect(item, user) {
+  const answer = normalize(user);
+  const needed = Math.min(2, item.keywords.length);
+  const found = item.keywords.filter(keyword => answer.includes(normalize(keyword))).length;
+  return { correct: found >= needed, found, needed };
+}
+
+function getUserAnswer(qi, qj) {
+  const item = quizzes[qi].questions[qj];
+  if (item.type === "text") {
+    return document.querySelector(`[name="q-${qi}-${qj}"]`)?.value || "";
+  }
+  return document.querySelector(`[name="q-${qi}-${qj}"]:checked`)?.value || "";
+}
+
+function render() {
+  examSummary.textContent = `${quizzes.length} questionnaires de 20 questions, dont 1 quiz intelligent généré automatiquement. Total : ${totalQuestions} points.`;
+  document.getElementById("globalScore").textContent = `0/${totalQuestions}`;
+
+  quizzes.forEach((quiz, qi) => {
+    const tab = document.createElement("button");
+    tab.className = `tab${qi === 0 ? " active" : ""}`;
+    tab.type = "button";
+    tab.textContent = quiz.smart ? "Quiz intelligent" : `Quiz ${qi + 1}`;
+    tab.addEventListener("click", () => switchQuiz(qi));
+    tabs.appendChild(tab);
+
+    const section = document.createElement("section");
+    section.className = `panel quiz${qi === 0 ? " active" : ""}`;
+    section.id = `quiz-${qi}`;
+    section.innerHTML = `
+      <div class="quiz-head">
+        <div>
+          <h2>${escapeHTML(quiz.title)}</h2>
+          <p class="desc">${escapeHTML(quiz.desc)}</p>
+        </div>
+        <div class="pill" id="quiz-score-${qi}">0/${quiz.questions.length}</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress-${qi}"></div></div>
+        <div class="pill" id="progress-label-${qi}">Question 1/${quiz.questions.length}</div>
+      </div>
+    `;
+
+    quiz.questions.forEach((item, qj) => {
+      section.appendChild(renderQuestion(item, qi, qj));
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    actions.innerHTML = `
+      <button class="secondary" type="button" id="prev-${qi}">Précédent</button>
+      <button class="secondary" type="button" id="next-${qi}">Suivant</button>
+      <button class="main" type="button">Corriger ce quiz</button>
+      <button class="ghost" type="button">Recommencer</button>
+    `;
+    actions.querySelector(".main").addEventListener("click", () => checkQuiz(qi));
+    actions.querySelector(".ghost").addEventListener("click", () => resetQuiz(qi));
+    actions.querySelector(`#prev-${qi}`).addEventListener("click", () => moveQuestion(qi, -1));
+    actions.querySelector(`#next-${qi}`).addEventListener("click", () => moveQuestion(qi, 1));
+    section.appendChild(actions);
+
+    const result = document.createElement("div");
+    result.className = "result";
+    result.id = `result-${qi}`;
+    section.appendChild(result);
+
+    container.appendChild(section);
+    updateQuestionView(qi);
+  });
+
+  updateGlobal();
+}
+
+function renderQuestion(item, qi, qj) {
+  const div = document.createElement("div");
+  div.className = `question${qj === 0 ? " current" : ""}`;
+  div.dataset.quiz = qi;
+  div.dataset.question = qj;
+
+  const title = document.createElement("h3");
+  title.textContent = item.q;
+  div.appendChild(title);
+
+  if (item.type === "mcq") {
+    item.options.forEach(option => div.appendChild(renderChoice(option, qi, qj)));
+  } else if (item.type === "tf") {
+    ["Vrai", "Faux"].forEach(option => div.appendChild(renderChoice(option, qi, qj)));
+  } else {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = `q-${qi}-${qj}`;
+    input.placeholder = "Écris ta réponse ici...";
+    input.addEventListener("input", () => clearFeedback(qi, qj));
+    div.appendChild(input);
+  }
+
+  const feedback = document.createElement("div");
+  feedback.className = "feedback";
+  feedback.id = `feedback-${qi}-${qj}`;
+  div.appendChild(feedback);
+  return div;
+}
+
+function renderChoice(option, qi, qj) {
+  const label = document.createElement("label");
+  label.className = "choice";
+
+  const input = document.createElement("input");
+  input.type = "radio";
+  input.name = `q-${qi}-${qj}`;
+  input.value = option;
+  input.addEventListener("change", () => {
+    document.querySelectorAll(`[name="q-${qi}-${qj}"]`).forEach(el => el.closest(".choice")?.classList.remove("selected"));
+    label.classList.add("selected");
+    clearFeedback(qi, qj);
+  });
+
+  const span = document.createElement("span");
+  span.textContent = option;
+
+  label.append(input, span);
+  return label;
+}
+
+function switchQuiz(index) {
+  state.activeQuiz = index;
+  document.querySelectorAll(".tab").forEach((tab, i) => tab.classList.toggle("active", i === index));
+  document.querySelectorAll(".quiz").forEach((quiz, i) => quiz.classList.toggle("active", i === index));
+  updateQuestionView(index);
+}
+
+function moveQuestion(qi, direction) {
+  const last = quizzes[qi].questions.length - 1;
+  state.currentQuestion[qi] = Math.max(0, Math.min(last, state.currentQuestion[qi] + direction));
+  updateQuestionView(qi);
+}
+
+function updateQuestionView(qi) {
+  const current = state.currentQuestion[qi];
+  const quiz = quizzes[qi];
+  document.querySelectorAll(`#quiz-${qi} .question`).forEach((question, index) => {
+    question.classList.toggle("current", index === current);
+  });
+  document.getElementById(`progress-${qi}`).style.width = `${((current + 1) / quiz.questions.length) * 100}%`;
+  document.getElementById(`progress-label-${qi}`).textContent = `Question ${current + 1}/${quiz.questions.length}`;
+  document.getElementById(`prev-${qi}`).disabled = current === 0;
+  document.getElementById(`next-${qi}`).disabled = current === quiz.questions.length - 1;
+}
+
+function clearFeedback(qi, qj) {
+  const feedback = document.getElementById(`feedback-${qi}-${qj}`);
+  feedback.className = "feedback";
+  feedback.textContent = "";
+  document.querySelectorAll(`[name="q-${qi}-${qj}"]`).forEach(el => {
+    el.closest(".choice")?.classList.remove("correct", "wrong");
+  });
+}
+
+function checkCurrentQuestion(qi, qj) {
+  const item = quizzes[qi].questions[qj];
+  const user = getUserAnswer(qi, qj);
+  const feedback = document.getElementById(`feedback-${qi}-${qj}`);
+  let correct = false;
+
+  if (item.type === "text") {
+    const result = isTextAnswerCorrect(item, user);
+    correct = result.correct;
+    feedback.innerHTML = `<strong>${correct ? "Bonne réponse" : "À revoir"}</strong> — ${escapeHTML(item.explain)}`;
+  } else {
+    correct = user === item.answer;
+    document.querySelectorAll(`[name="q-${qi}-${qj}"]`).forEach(el => {
+      const choice = el.closest(".choice");
+      choice?.classList.toggle("correct", el.value === item.answer);
+      choice?.classList.toggle("wrong", Boolean(user) && el.checked && el.value !== item.answer);
+    });
+    feedback.innerHTML = `<strong>${correct ? "Bonne réponse" : "Réponse incorrecte"}</strong> — Bonne réponse : <strong>${escapeHTML(item.answer)}</strong>. ${escapeHTML(item.explain)}`;
+  }
+
+  feedback.className = `feedback show ${correct ? "good" : "bad"}`;
+  return { correct, user };
+}
+
+function checkQuiz(qi) {
+  let score = 0;
+  let html = "";
+  const quiz = quizzes[qi];
+
+  quiz.questions.forEach((item, qj) => {
+    const { correct, user } = checkCurrentQuestion(qi, qj);
+    if (correct) score++;
+
+    const marker = correct ? "ok" : (user ? "bad" : "warn");
+    const status = correct ? "OK" : (user ? "X" : "...");
+    const answerLine = item.type === "text"
+      ? escapeHTML(item.explain)
+      : `Bonne réponse : <strong>${escapeHTML(item.answer)}</strong>. ${escapeHTML(item.explain)}`;
+    html += `<div class="correction"><span class="${marker}">${status}</span>Q${qj + 1} — ${answerLine}</div>`;
+  });
+
+  state.results[qi] = score;
+  state.checked[qi] = true;
+
+  const box = document.getElementById(`result-${qi}`);
+  box.classList.add("show");
+  box.innerHTML = `<strong>Score du quiz : ${score}/${quiz.questions.length}</strong>${html}`;
+  document.getElementById(`quiz-score-${qi}`).textContent = `${score}/${quiz.questions.length}`;
+  updateGlobal();
+  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function resetQuiz(qi) {
+  document.querySelectorAll(`[name^="q-${qi}-"]`).forEach(el => {
+    if (el.type === "radio") el.checked = false;
+    if (el.type === "text") el.value = "";
+    el.closest(".choice")?.classList.remove("selected", "correct", "wrong");
+  });
+
+  quizzes[qi].questions.forEach((_, qj) => clearFeedback(qi, qj));
+  delete state.results[qi];
+  delete state.checked[qi];
+  state.currentQuestion[qi] = 0;
+
+  const result = document.getElementById(`result-${qi}`);
+  result.classList.remove("show");
+  result.innerHTML = "";
+  document.getElementById(`quiz-score-${qi}`).textContent = `0/${quizzes[qi].questions.length}`;
+  updateQuestionView(qi);
+  updateGlobal();
+}
+
+function updateGlobal() {
+  const total = Object.values(state.results).reduce((sum, value) => sum + value, 0);
+  document.getElementById("globalScore").textContent = `${total}/${totalQuestions}`;
+  document.getElementById("globalPercent").textContent = `${Math.round((total / totalQuestions) * 100)}%`;
+}
+
+render();
+</script>
+</body>
+</html>
